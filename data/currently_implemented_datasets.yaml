@@ -1,0 +1,8 @@
+local:
+    UHM12k:
+        basedir: ''
+        paths_train: ''
+        paths_eval: ''
+        mean_std_file: 'assets/mean_std.pickle'
+        head_template: 'assets/mean.obj'
+        num_vertices: 11916

@@ -1,0 +1,54 @@
+MACHINE: 'local'
+
+MODEL:
+  backbone: "transformer"  # "mlpmixer"  #
+  face_part_ids_file: 'assets/head_regions_11_wname.pickle'
+  Npatches: 11
+  dim: 512
+  bottleneck_dim: 256
+  encoder_depth: 5
+  decoder_depth: 3
+  heads: 8
+  scale_dim: 4
+  dropout: 0.
+  regions:
+    9: [489, 985, 1889, 3986, 4042, 6201, 6207, 6644]
+    0: [699, 714, 1907, 3605, 3820, 3893, 3916, 3937, 3994, 4185, 4188]
+    8: [699, 1181, 1198, 1276, 1295, 1313, 6746, 6852, 7331, 7348, 7445, 11065]
+    3: [2397, 2421, 2460, 2489, 2504, 3027, 3036, 5110, 8544, 8563, 8596, 8603, 8628, 8643, 11125, 11171]
+    7: [3805, 3983, 8432]
+    1: [3893, 4185, 4188, 6852, 6867, 8060, 9644, 9953, 10047, 10101, 10398]
+    10: [4185, 4634, 4637, 4652, 4672, 4683, 4781, 4792, 5261, 6190, 10706, 10708, 10720, 10844, 10856]
+    6: [3307, 6185, 9439]
+
+DATASETS:
+  train:
+    dataset: 'UHM12k'
+    batch_size: 16
+
+  eval:
+    dataset: 'UHM12k'
+    batch_size: 16
+
+SOLVER:
+  num_epochs: 1500
+  num_warmup_epochs: 10
+  steps: (0, 80000)
+  loss_function: 'l1'
+  weights:  [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+  lr_scheduler: 'cosine'
+  lr_base: 1e-4
+  lr_min: 1e-8
+  lr_start: 1e-8
+  num_cycles: 1
+  lambda_lms: 0
+  b_min: 0.25
+  b_max: 1.0  # 0.25
+  b_max_epoch: 100
+
+CHECKPOINT:
+  load_from_checkpoint:
+  partial_restore: False
+  save_path: 'results/manipulation'
+  train_metrics_steps: 10
+  eval_steps: 20
