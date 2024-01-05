@@ -11,6 +11,8 @@ Authors:
 [Stylianos Ploumpis](https://scholar.google.co.uk/citations?user=5hM4Ul4AAAAJ&hl=en), 
 [Stefanos Zafeiriou](https://scholar.google.co.uk/citations?user=QKOH5iYAAAAJ&hl=en), 
 
+<img src="assets/architecture.png" alt="3D Morphable Model" width="100%" />
+
 ## Dependencies
 
 Before you can run this project, you need to install the necessary dependencies. These dependencies are listed in the `requirements.txt` file. Follow these steps to install them:
