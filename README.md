@@ -1,5 +1,5 @@
 # Locally Adaptive Neural 3D Morphable Models
-**[Arxiv]([tbc](https://arxiv.org/pdf/2401.02937.pdf))** 
+[Arxiv](https://arxiv.org/pdf/2401.02937.pdf)
 
 This is the official repository for the paper 
 "Locally Adaptive Neural 3D Morphable Models".  
