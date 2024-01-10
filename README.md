@@ -2,11 +2,6 @@
 This is the official repository for the paper [Locally Adaptive Neural 3D Morphable Models](https://arxiv.org/pdf/2401.02937.pdf).  
 
 Authors: Michail Tarasiou, Rolandos Alexandros Potamias, Eimear O'Sullivan, Stylianos Ploumpis, Stefanos Zafeiriou
-%[Michail Tarasiou](https://scholar.google.com/citations?user=ty8-urQAAAAJ&hl=en),
-%[Rolandos Alexandros Potamias](https://scholar.google.gr/citations?user=LteFCZsAAAAJ&hl=el), 
-%[Eimear O'Sullivan](https://scholar.google.com/citations?user=BL8Za2YAAAAJ&hl=en), 
-%[Stylianos Ploumpis](https://scholar.google.co.uk/citations?user=5hM4Ul4AAAAJ&hl=en), 
-%[Stefanos Zafeiriou](https://scholar.google.co.uk/citations?user=QKOH5iYAAAAJ&hl=en), 
 
 <img src="assets/architecture.png" alt="3D Morphable Model" width="100%" />
 
