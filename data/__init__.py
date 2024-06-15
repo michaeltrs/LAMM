@@ -1,17 +1,17 @@
 from data.dataloader import get_dataloader
-from data.data_transforms import mesh3D_transform
-from utils.config_files_utils import read_yaml
+from data.transforms import mesh3D_transform
+from utils.config_utils import read_yaml
 
 
 def get_dataloaders(config, return_paths=False):
-    DATASET_INFO = read_yaml("data/currently_implemented_datasets.yaml")[config['MACHINE']]
+    DATASET_INFO = read_yaml("data/implemented_datasets.yaml")[config['MACHINE']]
 
     dataloaders = {}
 
     # TRAIN data -------------------------------------------------------------------------------------------------------
     train_config = config['DATASETS']['train']
     TRAIN_DATA = DATASET_INFO[train_config['dataset']]
-    dataloaders['train'] = get_dataloader(paths_file=TRAIN_DATA['paths_train'],
+    dataloaders['training'] = get_dataloader(paths_file=TRAIN_DATA['paths_train'],
                                           root_dir=TRAIN_DATA['basedir'],
                                           transform=mesh3D_transform(mean_std_file=TRAIN_DATA['mean_std_file']),
                                           batch_size=train_config['batch_size'], num_workers=4, shuffle=True,

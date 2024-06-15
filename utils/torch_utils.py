@@ -1,7 +1,24 @@
-import torch
 import os
 import glob
 import sys
+import torch
+import torch.nn.functional as F
+
+
+def resize_match2d(target_size, source, dim=[2, 3], mode='bilinear'):
+    """
+    source must have shape [..., H, W]
+    :param mode: 'nearest'
+    """
+    target_h, target_w = target_size
+    source_h, source_w = source.shape[dim[0]], source.shape[dim[1]]
+    if (source_h != target_h) or (source_w != target_w):
+        source_type = source.dtype
+        if source_type != torch.float32:
+            source = source.to(torch.float32)
+            return F.interpolate(source, size=(target_h, target_w), mode=mode).to(source_type)
+        return F.interpolate(source, size=(target_h, target_w), mode=mode)
+    return source
 
 
 def load_from_checkpoint(net, checkpoint, partial_restore=False, device=None):
@@ -19,35 +36,17 @@ def load_from_checkpoint(net, checkpoint, partial_restore=False, device=None):
         else:
             saved_net = torch.load(checkpoint, map_location=device)
     else:
-        raise FileNotFoundError("provided checkpoint not found, does not mach any directory or file")
+        raise FileNotFoundError(f"provided checkpoint {checkpoint} not found, does not mach any directory or file.")
 
+    # For partially restoring a model from checkpoint restore only the common parameters and randomly initialize the
+    # remaining ones
     if partial_restore:
         net_dict = net.state_dict()
-        if 'state_dict' in saved_net.keys():
-            if any(['encoder_q' in key for key in saved_net['state_dict'].keys()]):
-                saved_net2 = {}
-                for k, v in saved_net['state_dict'].items():
-                    try:
-                        if k.split(".")[:2] == ['module', 'encoder_q']:
-                            k = ".".join(k.split(".")[2:])
-                            if k.split(".")[0] == 'crnn':
-                                k_ = k.split(".")
-                                k_[0] = 'crnn_main'
-                                k = ".".join(k_)
-                            if k in net_dict:
-                                saved_net2[k] = v
-                    except:
-                        continue
-                saved_net = saved_net2
-            else:
-                saved_net = {k: v for k, v in saved_net.items() if k in net_dict}
-        else:
-            saved_net = {k: v for k, v in saved_net.items() if (k in net_dict)}
-
-        print("params to keep from checkpoint:")
+        saved_net = {k: v for k, v in saved_net.items() if (k in net_dict)}
+        print("parameters to keep from checkpoint:")
         print(saved_net.keys())
         extra_params = {k: v for k, v in net_dict.items() if k not in saved_net}
-        print("params to randomly init:")
+        print("parameters to randomly init:")
         print(extra_params.keys())
         for param in extra_params:
             saved_net[param] = net_dict[param]
@@ -60,7 +59,7 @@ def get_net_trainable_params(net):
         trainable_params = net.trainable_params
     except AttributeError:
         trainable_params = list(net.parameters())
-    print("Trainable params shapes are:")
+    print("Trainable parameters shapes are:")
     print([trp.shape for trp in trainable_params])
     return trainable_params
     

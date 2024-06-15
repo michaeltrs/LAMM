@@ -3,6 +3,12 @@ from einops import rearrange
 
 
 class Residual(nn.Module):
+    """
+    A residual connection wrapper for a neural network function.
+
+    Args:
+        fn (callable): The neural network function to wrap with a residual connection.
+    """
     def __init__(self, fn):
         super().__init__()
         self.fn = fn
@@ -12,6 +18,13 @@ class Residual(nn.Module):
 
 
 class PreNorm(nn.Module):
+    """
+    Applies Layer Normalization before passing the input through the given function.
+
+    Args:
+        dim (int): The dimension of the LayerNorm normalization.
+        fn (callable): The neural network function to apply after normalization.
+    """
     def __init__(self, dim, fn):
         super().__init__()
         self.norm = nn.LayerNorm(dim)
@@ -21,36 +34,15 @@ class PreNorm(nn.Module):
         return self.fn(self.norm(x), **kwargs)
 
 
-class PreNormLocal(nn.Module):
-    def __init__(self, dim, fn):
-        super().__init__()
-        self.norm = nn.LayerNorm(dim)
-        self.fn = fn
-
-    def forward(self, x, **kwargs):
-        x = x.permute(0, 2, 3, 1)
-        x = self.norm(x)
-        x = x.permute(0, 3, 1, 2)
-        x = self.fn(x, **kwargs)
-        return x
-
-
-class Conv1x1Block(nn.Module):
-    def __init__(self, dim, hidden_dim, dropout=0.):
-        super().__init__()
-        self.net = nn.Sequential(
-            nn.Conv2d(dim, hidden_dim, kernel_size=1),
-            nn.GELU(),
-            nn.Dropout(dropout),
-            nn.Conv2d(hidden_dim, dim, kernel_size=1),
-            nn.Dropout(dropout)
-        )
-
-    def forward(self, x):
-        return self.net(x)
-
-
 class FeedForward(nn.Module):
+    """
+    A simple feed-forward block with a linear transformation, GELU activation, and optional dropout.
+
+    Args:
+        dim (int): Number of input and output features.
+        hidden_dim (int): Number of hidden units.
+        dropout (float, optional): Dropout rate. Default: 0.
+    """
     def __init__(self, dim, hidden_dim, dropout=0.):
         super().__init__()
         self.net = nn.Sequential(
@@ -65,6 +57,15 @@ class FeedForward(nn.Module):
 
 
 class Attention(nn.Module):
+    """
+    Implements a multi-head self-attention mechanism.
+
+    Args:
+        dim (int): Dimension of input features.
+        heads (int): Number of attention heads.
+        dim_head (int): Dimension of each attention head.
+        dropout (float, optional): Dropout rate for attention weights. Default: 0.
+    """
     def __init__(self, dim, heads=8, dim_head=64, dropout=0.):
         super().__init__()
         inner_dim = dim_head * heads
@@ -90,6 +91,20 @@ class Attention(nn.Module):
 
 
 class TransformerPerLayerOut(nn.Module):
+    """
+    A Transformer module that returns intermediate layer outputs. This module stacks several blocks, each consisting of
+    a PreNorm-Attention and PreNorm-FeedForward layers, and applies Layer Normalization at the end. It is capable
+    of returning all intermediate outputs for each block if specified.
+
+    Args:
+        dim (int): The feature dimension of the input and output.
+        depth (int): The number of layers in the transformer.
+        heads (int): The number of attention heads in the Attention mechanism.
+        dim_head (int): The dimension of each attention head.
+        mlp_dim (int): The dimension of the hidden layer in the FeedForward block.
+        dropout (float, optional): Dropout rate applied in Attention and FeedForward blocks. Default: 0.
+        return_input (bool, optional): If True, includes the input in the list of returned outputs. Default: True.
+    """
     def __init__(self, dim, depth, heads, dim_head, mlp_dim, dropout=0., return_input=True):
         super().__init__()
         self.layers = nn.ModuleList([])

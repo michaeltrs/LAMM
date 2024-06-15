@@ -1,4 +1,4 @@
-def write_mean_summaries(writer, metrics, abs_step, mode="train", optimizer=None):
+def write_mean_summaries(writer, metrics, abs_step, mode="training", optimizer=None):
     for key in metrics:
         writer.add_scalars(main_tag=key, tag_scalar_dict={'%s_Average' % mode: metrics[key]},
                            global_step=abs_step, walltime=None)
@@ -16,6 +16,6 @@ def write_class_summaries(writer, metrics, abs_step, mode="eval", optimizer=None
         writer.add_scalar('learn_rate', optimizer.param_groups[0]["lr"], abs_step)
 
 
-def write_histogram_summaries(writer, metrics, abs_step, mode="train"):
+def write_histogram_summaries(writer, metrics, abs_step, mode="training"):
     for key in metrics:
         writer.add_histogram("%s_%s" % (mode, key), metrics[key], global_step=abs_step)

@@ -1,0 +1,42 @@
+MACHINE: 'local'
+
+MODEL:
+  backbone: "mlpmixer"  # "transformer"  #
+  region_ids_file: 'assets/checkpoints/UHM12k/files/region_ids.pickle'
+  Npatches: 11
+  dim: 512
+  bottleneck_dim: 256
+  encoder_depth: 5
+  decoder_depth: 3
+  scale_dim: 4
+  scale_dim_token: 0.5
+  dropout: 0.
+
+DATASETS:
+  train:
+    dataset: 'UHM12k'
+    batch_size: 32
+
+  eval:
+    dataset: 'UHM12k'
+    batch_size: 32
+
+SOLVER:
+  num_epochs: 1500
+  num_warmup_epochs: 1
+  steps: (0, 80000)
+  loss_function: 'l1'
+  weights:  [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+  lr_scheduler: 'cosine'
+  lr_base: 1e-3
+  lr_min: 1e-6
+  lr_start: 1e-8
+  num_cycles: 1
+  seed: 42
+
+CHECKPOINT:
+  load_from_checkpoint:
+  partial_restore: False
+  save_dir: 'results/dim_reduction'
+  train_metrics_steps: 250
+  eval_steps: 500

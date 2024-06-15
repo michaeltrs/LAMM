@@ -1,13 +1,12 @@
 from __future__ import print_function, division
-import pandas as pd
-from torch.utils.data import Dataset, DataLoader
-import torch.utils.data
-import warnings
-warnings.filterwarnings("ignore")
 import os
-import torch
-import trimesh
+
 import numpy as np
+import pandas as pd
+import torch
+import torch.utils.data
+from torch.utils.data import Dataset, DataLoader
+import trimesh
 
 
 def get_dataloader(paths_file, root_dir, transform=None, batch_size=32, num_workers=4, shuffle=True,
@@ -19,16 +18,17 @@ def get_dataloader(paths_file, root_dir, transform=None, batch_size=32, num_work
 
 
 class Mesh3DDataset(Dataset):
-    """Satellite Images dataset."""
+    """
+    3D Mesh Dataset.
 
+    Args:
+    csv_file (string): Path to the csv file with .obj mesh paths.
+    root_dir (string): Root directory with all the meshes. Paths found in csv_file are defined relative to this path.
+    transform (callable, optional): Optional transform to be applied on a sample.
+    Returns:
+        dict: __getitem__ returns a dict containing a set of 3D points and optionally its file path.
+    """
     def __init__(self, csv_file, root_dir, transform=None, return_paths=False):
-        """
-        Args:
-            csv_file (string): Path to the csv file with annotations.
-            root_dir (string): Directory with all the images.
-            transform (callable, optional): Optional transform to be applied
-                on a sample.
-        """
         if type(csv_file) == str:
             self.data_paths = pd.read_csv(csv_file, header=None)
         elif type(csv_file) in [list, tuple]:
@@ -44,8 +44,10 @@ class Mesh3DDataset(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
+        # Join root_dir and provided path to create sample absolute path
         sample_path = os.path.join(self.root_dir, self.data_paths.iloc[idx, 0])
 
+        # Read mesh object and extract vertices
         verts = np.array(trimesh.load(sample_path).vertices)
 
         sample = {
@@ -56,7 +58,8 @@ class Mesh3DDataset(Dataset):
         if self.transform:
             sample = self.transform(sample)
 
+        # Optionally return paths
         if self.return_paths:
-            return sample, sample_path
+            sample['path'] = sample_path
         
         return sample

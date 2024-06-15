@@ -1,0 +1,8 @@
+local:
+    UHM12k:
+        basedir: ''
+        paths_train: ''
+        paths_eval: ''
+        mean_std_file: ''
+        template: ''
+        num_vertices: 11916
